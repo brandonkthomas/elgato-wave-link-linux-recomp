@@ -12,18 +12,20 @@
     <a href="https://isocpp.org"><img alt="C++" src="https://img.shields.io/badge/C%2B%2B-00599C?logo=cplusplus&logoColor=white"></a>
     <a href="https://www.qt.io"><img alt="Qt" src="https://img.shields.io/badge/Qt-41CD52?logo=qt&logoColor=white"></a>
     <a href="https://pipewire.org"><img alt="PipeWire" src="https://img.shields.io/badge/PipeWire-4A86CF"></a>
-    <a href="https://store.steampowered.com/steamos"><img alt="SteamOS" src="https://img.shields.io/badge/SteamOS-1A9FFF?logo=steamdeck&logoColor=white"></a>
-    <a href="https://kde.org/plasma-desktop/"><img alt="KDE Plasma" src="https://img.shields.io/badge/KDE%20Plasma-1D99F3?logo=kde&logoColor=white"></a>
+  </p>
+  
+  <p>
+    <b>Unofficial</b> and not affiliated with Elgato or Corsair. Elgato, Wave Link and Wave:3 are their trademarks.
   </p>
 </div>
 
 ## About the Project
 
 Elgato's Wave Link runs only on Windows and macOS. This project recreates Wave Link 3.4 for Linux for the
-Elgato Wave:3, matching it as closely as possible in look and behavior. No Wave Link source exists, so
-everything was rebuilt from the decompiled Windows and macOS releases and checked against them.
+Elgato Wave:3 using [morluto/rea](https://github.com/morluto/rea) and Claude Opus 5.5. No Wave Link source 
+exists, so the project was rebuilt from the decompiled Windows and macOS releases and checked against them.
 
-It runs on SteamOS 3 in desktop mode (KDE Plasma on Wayland), and should run on any x86-64 distribution
+Tested on Arch w/ KDE Plasma on Wayland, and should run on any x86-64 distribution
 with glibc 2.36 or newer and PipeWire.
 
 ### Feature Highlights
@@ -76,3 +78,12 @@ docker buildx build --platform linux/amd64 -f wavelink-linux/packaging/release.D
 The integration test's effect checks need the DeepFilterNet and RNNoise LADSPA plugins for the
 container's architecture in `wavelink-linux/build-plugins/<arch>/` (the release build downloads the
 x86-64 ones itself).
+
+## Disclaimer
+
+An independent reimplementation, not affiliated with or endorsed by Elgato or Corsair. Elgato, Wave Link
+and Wave:3 are their trademarks, and the screenshot shows Wave Link's design, which belongs to Elgato.
+This repository contains no Elgato code, installers, fonts or images: the app loads those from your own
+Wave Link installer. Third-party parts keep their licenses: DeepFilterNet (MIT/Apache-2.0), the RNNoise
+LADSPA plugin (GPL-3.0, downloaded at build time), the LADSPA header (LGPL) and Microsoft's XBF parser
+and WinUI theme values (MIT).
