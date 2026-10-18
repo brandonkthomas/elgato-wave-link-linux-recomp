@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Wave Link
+Comment=Audio mixer for Elgato Wave microphones
+Exec=@PREFIX@/bin/wavelink
+Icon=@ICON@
+Terminal=false
+Categories=AudioVideo;Audio;Mixer;
+StartupWMClass=wavelink-linux

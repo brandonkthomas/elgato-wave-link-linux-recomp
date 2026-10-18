@@ -1,0 +1,26 @@
+# Build output
+build*/
+dist/
+*.tar.gz
+**/obj/
+**/bin/Debug/
+**/bin/Release/
+
+# Compiled analysis helpers (sources are kept)
+tools/probe/*
+!tools/probe/*.c
+tools/au-harness/*
+!tools/au-harness/*.cpp
+
+# Third-party checkouts used by tools/xaml-extract (re-cloned when needed)
+tools/xaml-extract/vendor/
+
+# Elgato's files never belong here: installers, plugins, assets, decompiled code
+*.msix
+*.dmg
+*.component/
+elgato-assets/
+extracted/
+work/
+
+.DS_Store

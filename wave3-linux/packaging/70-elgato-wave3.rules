@@ -1,0 +1,4 @@
+# Let the logged-in user talk to the Elgato Wave:3 (normal and firmware-update mode) with
+# wave3ctl, without root. Reload with: sudo udevadm control --reload && sudo udevadm trigger
+SUBSYSTEM=="usb", ATTR{idVendor}=="0fd9", ATTR{idProduct}=="0070", TAG+="uaccess"
+SUBSYSTEM=="usb", ATTR{idVendor}=="0fd9", ATTR{idProduct}=="0071", TAG+="uaccess"

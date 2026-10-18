@@ -1,0 +1,14 @@
+<!-- Copyright (c) Microsoft Corporation. Licensed under the MIT License. See LICENSE in the project root for license information. -->
+<!-- Vendored from microsoft/microsoft-ui-xaml dxaml/xcp/tools/XbfParser/WidgetSpinner; local changes are marked "XAML-EXTRACT" -->
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Xbf2Xaml" />
+  </ItemGroup>
+
+</Project>

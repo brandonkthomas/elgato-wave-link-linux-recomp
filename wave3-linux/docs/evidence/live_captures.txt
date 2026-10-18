@@ -1,0 +1,76 @@
+# Live captures, 2026-10-17, Wave:3 0fd9:0070 bcdDevice 0x0122, macOS + libusb 1.0.30
+# Probe sources: WaveLink-Rev/tools/probe/*.c (read-only except fuset)
+
+## probe: descriptors + GET_MEM(10)
+if 0 alt 0 class 1 sub 1 proto 0 eps 1 extra 76
+  AC desc len 10 type 0x24 HEADER           id  -1 : 0a 24 01 00 01 4c 00 02 01 02
+  AC desc len 12 type 0x24 INPUT_TERMINAL   id   1 : 0c 24 02 01 01 01 00 02 03 00 00 00
+  AC desc len 13 type 0x24 FEATURE_UNIT     id   5 : 0d 24 06 05 01 02 03 00 00 00 00 00 00
+  AC desc len  9 type 0x24 OUTPUT_TERMINAL  id   2 : 09 24 03 02 02 03 00 05 00
+  AC desc len 12 type 0x24 INPUT_TERMINAL   id   4 : 0c 24 02 04 01 02 00 01 00 00 00 00
+  AC desc len 11 type 0x24 FEATURE_UNIT     id   6 : 0b 24 06 06 04 02 03 00 00 00 00
+  AC desc len  9 type 0x24 OUTPUT_TERMINAL  id   3 : 09 24 03 03 01 01 00 06 00
+if 1 alt 0 class 1 sub 2 proto 0 eps 0 extra 0
+if 1 alt 1 class 1 sub 2 proto 0 eps 2 extra 21
+if 2 alt 0 class 1 sub 2 proto 0 eps 0 extra 0
+if 2 alt 1 class 1 sub 2 proto 0 eps 1 extra 21
+if 3 alt 0 class 255 sub 240 proto 0 eps 0 extra 0
+if 4 alt 0 class 254 sub 1 proto 1 eps 0 extra 9
+audio control interface = 0
+GET_MEM(10) iface-recipient -> 2 (ok) data 05 03
+
+## readmsg: /config, /status, /version
+/config   id  0 len 16 -> 16: 00 14 00 ec 01 01 00 80 ea 00 00 00 02 00 00 00
+          ascii: ................
+/status   id  1 len  8 -> 8: 5d 00 00 00 5d 00 00 00
+          ascii: ]...]...
+/version  id 10 len 52 -> 52: 05 03 4b 03 00 0a 00 03 07 03 00 00 00 00 00 00 00 00 00 00 00 01 02 02 03 00 00 00 30 62 34 32 35 31 65 65 42 53 30 30 30 30 30 30 30 30 30 30 84 03 dc 05
+          ascii: ..K.........................0b4251eeBS0000000000....
+
+## recipient: which bmRequestType the firmware accepts
+bmRequestType 0xa1 class|interface   ->  16                00 14 00 ec 01 01 00 80 ea 00 00 00 02 00 00 00
+bmRequestType 0xa0 class|device      ->  -9 LIBUSB_ERROR_PIPE
+bmRequestType 0xa3 class|other       ->  -9 LIBUSB_ERROR_PIPE
+bmRequestType 0xc0 vendor|device     ->  -1 LIBUSB_ERROR_IO
+bmRequestType 0xc1 vendor|interface  ->  -9 LIBUSB_ERROR_PIPE
+
+## ifnum: wIndex low byte
+wIndex 0x3300 ->  16                    00 14 00 ec 01 01 00 80 ea 00 00 00 02 00 00 00
+wIndex 0x3301 ->  16                    00 14 00 ec 01 01 00 80 ea 00 00 00 02 00 00 00
+wIndex 0x3302 ->  16                    00 14 00 ec 01 01 00 80 ea 00 00 00 02 00 00 00
+wIndex 0x3303 ->  16                    00 14 00 ec 01 01 00 80 ea 00 00 00 02 00 00 00
+wIndex 0x3304 ->  -7 LIBUSB_ERROR_TIMEOUT
+wIndex 0x3305 ->  -9 LIBUSB_ERROR_PIPE 
+
+## fu: standard feature units
+FU5 volume CUR -> r=2 raw=0xea80 (-21.50 dB)
+FU5 volume MIN -> r=2 raw=0xc400 (-60.00 dB)
+FU5 volume MAX -> r=2 raw=0x0000 (0.00 dB)
+FU5 volume RES -> r=2 raw=0x0080 (0.50 dB)
+FU5 mute CUR -> r=1 0
+FU6 volume CUR -> r=2 raw=0x1400 (20.00 dB)
+FU6 volume MIN -> r=2 raw=0x0000 (0.00 dB)
+FU6 volume MAX -> r=2 raw=0x2800 (40.00 dB)
+FU6 volume RES -> r=2 raw=0x0080 (0.50 dB)
+FU6 mute CUR -> r=1 1
+
+## write sweep (wave3ctl set ..., then dump + feature-unit readback), recorded earlier in the session
+set gain=0          config 00 00 00 ec 01 01 00 80 ea 00 00 00 02 00 00 00   FU6 0.00 dB
+set gain=40         config 00 28 00 ec 01 01 00 80 ea 00 00 00 02 00 00 00   FU6 40.00 dB
+set gain=22.5       config 80 16 00 ec 01 01 00 80 ea 00 00 00 02 00 00 00   FU6 22.50 dB
+set gain=20.3       -> rounded to 20.5; config 80 14 ...                    FU6 20.50 dB
+set headphone=-60   config 80 14 00 ec 01 01 00 00 c4 00 00 00 02 00 00 00   FU5 -60.00 dB
+set headphone=0     config 80 14 00 ec 01 01 00 00 00 00 00 00 02 00 00 00   FU5 0.00 dB
+set headphone=-21.5 config 80 14 00 ec 01 01 00 80 ea 00 00 00 02 00 00 00   FU5 -21.50 dB
+set mix=50          config 80 14 00 ec 01 01 00 80 ea 00 00 32 02 00 00 00
+set mix=100         config 80 14 00 ec 01 01 00 80 ea 00 00 64 02 00 00 00
+set mute=off        config 80 14 00 ec 00 01 00 80 ea 00 00 00 02 00 00 00   FU6 mute 0
+set mute=on         config 80 14 00 ec 01 01 00 80 ea 00 00 00 02 00 00 00   FU6 mute 1
+
+## gain_lock
+gain_lock=off; SET_CUR FU6 volume 10 dB -> input_gain 10 dB
+gain_lock=on;  SET_CUR FU6 volume 30 dB -> input_gain stays 10 dB (FU6 CUR 10.00 dB)
+gain_lock=on;  wave3ctl set gain=25     -> input_gain 25 dB
+
+## restore
+final config 00 14 00 ec 01 01 00 80 ea 00 00 00 02 00 00 00 (identical to the first capture)

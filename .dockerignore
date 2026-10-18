@@ -1,0 +1,8 @@
+*
+!wave3-linux
+!wavelink-linux
+wave3-linux/build*
+wave3-linux/dist
+wavelink-linux/build*
+wavelink-linux/dist
+**/.DS_Store

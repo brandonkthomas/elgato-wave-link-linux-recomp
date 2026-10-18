@@ -1,0 +1,13 @@
+[Unit]
+Description=Wave Link for Linux audio engine
+Documentation=file://@PREFIX@/README.md
+After=pipewire.service wireplumber.service
+Wants=pipewire.service
+
+[Service]
+ExecStart=@PREFIX@/bin/wavelinkd
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=default.target
