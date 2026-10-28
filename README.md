@@ -40,9 +40,9 @@ with glibc 2.36 or newer and PipeWire.
 - **Sound Check**: record up to 10 seconds of your mic after its effects and play it back.
 - **App and tray**: Wave Link's Windows interface rebuilt in Qt Quick, with the tray icon, settings and the per-channel dialog.
 
-## Install
+## Installation
 
-### Arch, Ubuntu/Pop!_OS 24.04+, Fedora 37+, Mint 22+, Debian 12+
+### Install on Arch, Ubuntu/Pop!_OS 24.04+, Fedora 37+, Mint 22+, Debian 12+
 
 1. Download the [latest release](https://github.com/brandonkthomas/elgato-wave-link-linux-recomp/releases/latest/download/wavelink-linux-x86_64.tar.gz).
 2. Download Elgato's [Wave Link installer](https://edge.elgato.com/egc/windows/ewlw/3.4/Stable/Elgato.WaveLink_3.4.0.4650_x64.msix) (`.msix` Windows build v3.4.0 -- leave compressed for now).
@@ -60,9 +60,19 @@ strings are not in this repository or its releases; `install.sh` copies them fro
 > [!NOTE]
 > Only Arch has been tested at this time. Please open an issue / pull request if your distribution has any issues installing.
 
-## Uninstall
+### Uninstall
 
 To uninstall: `~/.local/opt/wavelink-linux/uninstall.sh` (add `--purge` to also remove settings and Elgato assets).
+
+### Troubleshooting
+
+If you run into any issues with input / system audio, try restarting the Wave Link service:
+
+```sh
+systemctl --user restart wavelinkd
+```
+
+More fixes are in the [troubleshooting table](wavelink-linux/README.md#troubleshooting).
 
 ## Project Technicals
 
@@ -79,19 +89,32 @@ Not in this repository, and never to be committed: Elgato's installers, plugins,
 strings, and the decompiled Wave Link code (`wavelink-linux/tools/import-elgato-assets.sh` copies the
 assets from your installer).
 
-### Build and Test (from the repository root)
+### Build and Test
+
+Run these from the repository root.
+
+#### Linux (native)
 
 ```sh
-# Development image (Debian 13, Qt 6.8, PipeWire 1.4), then engine, unit and integration tests
-docker build -t wavelink-dev:trixie -f wavelink-linux/docker/dev.Dockerfile wavelink-linux/docker
-docker run --rm -v "$PWD:/w" -w /w/wavelink-linux wavelink-dev:trixie \
-  bash -c 'cmake -S . -B build-linux -G Ninja && cmake --build build-linux && ctest --test-dir build-linux'
-docker run --rm -v "$PWD:/w" -w /w/wavelink-linux -e WAVELINK_PLUGIN_DIR=/w/wavelink-linux/build-plugins/aarch64 \
-  wavelink-dev:trixie bash engine/tests/integration.sh build-linux
+# Arch packages; other distros need the same libraries under their own names
+sudo pacman -S --needed base-devel cmake ninja qt6-base qt6-declarative qt6-websockets qt6-svg \
+  qt6-wayland pipewire pipewire-audio wireplumber libusb python
+cmake -S wavelink-linux -B wavelink-linux/build-linux -G Ninja
+cmake --build wavelink-linux/build-linux
+ctest --test-dir wavelink-linux/build-linux
 
-# App on macOS for UI work (Homebrew Qt), against an engine in the dev image: engine/tests/demo.sh
-cmake -S wavelink-linux -B wavelink-linux/build-mac -G Ninja -DCMAKE_PREFIX_PATH="$(brew --prefix qt)"
-cmake --build wavelink-linux/build-mac
+# Integration test: starts its own PipeWire session; the plugins enable its effect checks (x86-64 only)
+wavelink-linux/packaging/fetch-plugins.sh wavelink-linux/build-plugins/x86_64
+wavelink-linux/engine/tests/integration.sh wavelink-linux/build-linux
+```
+
+#### Docker (any host)
+
+```sh
+# Development image (Debian 13, Qt 6.8, PipeWire 1.4), then unit and integration tests
+docker build -t wavelink-dev:trixie -f wavelink-linux/docker/dev.Dockerfile wavelink-linux/docker
+docker run --rm -v "$PWD:/w" -w /w/wavelink-linux wavelink-dev:trixie bash -c \
+  'cmake -S . -B build-docker -G Ninja && cmake --build build-docker && ctest --test-dir build-docker && engine/tests/integration.sh build-docker'
 
 # x86-64 release bundle: wavelink-linux/dist/wavelink-linux-x86_64.tar.gz
 # (.github/workflows/release.yml builds and publishes it when a v* tag is pushed)
@@ -99,9 +122,25 @@ docker buildx build --platform linux/amd64 -f wavelink-linux/packaging/release.D
   --target export --output type=local,dest=wavelink-linux/dist .
 ```
 
-The integration test's effect checks need the DeepFilterNet and RNNoise LADSPA plugins for the
-container's architecture in `wavelink-linux/build-plugins/<arch>/` (the release build downloads the
-x86-64 ones itself).
+#### macOS (UI work only)
+
+The engine needs PipeWire, so on macOS only the app builds. It connects to an engine playing test tones
+in the dev image.
+
+```sh
+brew install qt cmake ninja
+cmake -S wavelink-linux -B wavelink-linux/build-mac -G Ninja -DCMAKE_PREFIX_PATH="$(brew --prefix qt)"
+cmake --build wavelink-linux/build-mac
+
+docker run -d --name wavelink-demo -p 127.0.0.1:1884:1884 -v "$PWD:/w" -w /w/wavelink-linux wavelink-dev:trixie \
+  bash -c 'cmake -S . -B build-docker -G Ninja && cmake --build build-docker && engine/tests/demo.sh build-docker'
+wavelink-linux/build-mac/app/wavelink
+```
+
+The integration test and demo load the effect plugins from `wavelink-linux/build-plugins/<arch>/`, matching
+the machine or container they run on (`WAVELINK_PLUGIN_DIR` overrides), and skip the effect checks without
+them. `fetch-plugins.sh` provides the x86-64 builds. DeepFilterNet and RNNoise publish no other Linux
+builds, so on Apple Silicon (aarch64 containers) build them from their sources.
 
 ## Disclaimer
 

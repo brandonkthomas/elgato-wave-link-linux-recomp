@@ -2,11 +2,16 @@
 # Run a private PipeWire session with the engine exposed on 0.0.0.0:1884 and a few channels playing
 # looping test tones, for driving the UI during development (run inside the dev image):
 #   docker run -d --name wavelink-demo -p 127.0.0.1:1884:1884 -v <repo>:/w -w /w/wavelink-linux \
-#     [-e WAVELINK_PLUGIN_DIR=/w/wavelink-linux/build-plugins/aarch64] wavelink-dev:trixie \
-#     bash engine/tests/demo.sh build-linux
+#     wavelink-dev:trixie bash engine/tests/demo.sh build-linux
+# Effects load from build-plugins/<arch>/ when present (WAVELINK_PLUGIN_DIR overrides).
 set -euo pipefail
 BUILD=${1:?build dir}
 HERE=$(cd "$(dirname "$0")" && pwd)
+# Effect plugins for this machine's architecture, when present (wavelink-linux/build-plugins/<arch>/)
+if [ -z "${WAVELINK_PLUGIN_DIR:-}" ] && [ -d "$HERE/../../build-plugins/$(uname -m)" ]; then
+  WAVELINK_PLUGIN_DIR=$(cd "$HERE/../../build-plugins/$(uname -m)" && pwd)
+  export WAVELINK_PLUGIN_DIR
+fi
 WORK=$(mktemp -d)
 export XDG_RUNTIME_DIR="$WORK/run" HOME="$WORK/home"
 mkdir -p "$XDG_RUNTIME_DIR" "$HOME" && chmod 700 "$XDG_RUNTIME_DIR"

@@ -1,9 +1,14 @@
 #!/usr/bin/env bash
-# End-to-end engine test against a private PipeWire + WirePlumber session (run inside the dev image).
+# End-to-end engine test against a private PipeWire + WirePlumber session (dev image or native Linux).
 #   engine/tests/integration.sh <build-dir>
 set -euo pipefail
 BUILD=${1:?build dir}
 HERE=$(cd "$(dirname "$0")" && pwd)
+# Effect plugins for this machine's architecture, when present (wavelink-linux/build-plugins/<arch>/)
+if [ -z "${WAVELINK_PLUGIN_DIR:-}" ] && [ -d "$HERE/../../build-plugins/$(uname -m)" ]; then
+  WAVELINK_PLUGIN_DIR=$(cd "$HERE/../../build-plugins/$(uname -m)" && pwd)
+  export WAVELINK_PLUGIN_DIR
+fi
 WORK=$(mktemp -d)
 export XDG_RUNTIME_DIR="$WORK/run" HOME="$WORK/home" PIPEWIRE_RUNTIME_DIR="$WORK/run"
 mkdir -p "$XDG_RUNTIME_DIR" "$HOME" && chmod 700 "$XDG_RUNTIME_DIR"
