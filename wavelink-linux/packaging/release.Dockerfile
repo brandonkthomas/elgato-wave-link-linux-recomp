@@ -1,9 +1,20 @@
-# Release build for SteamOS / any x86-64 Linux with glibc >= 2.36: Qt 6.8 LTS official binaries,
+# Release build for any x86-64 Linux with glibc >= 2.36: Qt 6.8 LTS official binaries,
 # app + engine bundled into a relocatable directory (Qt and its plugins included; PipeWire and libusb
 # come from the system).
 #   (from the repository root; -j4 keeps emulated x86-64 compiles inside a 4 GB Docker VM)
 #   docker buildx build --platform linux/amd64 -f wavelink-linux/packaging/release.Dockerfile \
 #     --target export --output type=local,dest=wavelink-linux/dist .
+# PriDump reads Wave Link's UI strings out of the installer's .pri files during install; published as a
+# self-contained single file so users need no .NET SDK.
+FROM --platform=linux/amd64 mcr.microsoft.com/dotnet/sdk:10.0 AS pridump
+WORKDIR /xe
+COPY tools/xaml-extract/src/PriDump /xe/src/PriDump
+RUN git clone -q https://github.com/chausner/PriTools.git vendor/PriTools \
+ && git -C vendor/PriTools checkout -q 765d4544fd48aaaebf848b5b1b24ade2cf1770a0 \
+ && dotnet publish src/PriDump -c Release -r linux-x64 --self-contained -p:PublishSingleFile=true \
+      -p:InvariantGlobalization=true -p:EnableCompressionInSingleFile=true -p:DebugType=none -o /out \
+ && mv /out/PriDump /out/pridump
+
 FROM --platform=linux/amd64 debian:bookworm AS build
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -33,7 +44,10 @@ RUN cmake -S wavelink-linux -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE
  && mkdir -p /out/wavelink-linux/lib/wavelink/plugins && cp /plugins/*.so /out/wavelink-linux/lib/wavelink/plugins/ \
  && cp wavelink-linux/README.md wavelink-linux/packaging/install.sh wavelink-linux/packaging/wavelinkd.service wave3-linux/packaging/70-elgato-wave3.rules /out/wavelink-linux/ \
  && cp -r wavelink-linux/packaging/desktop /out/wavelink-linux/desktop \
- && tar -C /out -czf /out/wavelink-linux-x86_64.tar.gz wavelink-linux
+ && cp -r wavelink-linux/packaging/licenses /out/wavelink-linux/licenses \
+ && mkdir -p /out/wavelink-linux/tools && cp wavelink-linux/tools/import-elgato-assets.sh /out/wavelink-linux/tools/
+COPY --from=pridump /out/pridump /out/wavelink-linux/tools/pridump
+RUN tar -C /out -czf /out/wavelink-linux-x86_64.tar.gz wavelink-linux
 
 FROM scratch AS export
 COPY --from=build /out/wavelink-linux-x86_64.tar.gz /

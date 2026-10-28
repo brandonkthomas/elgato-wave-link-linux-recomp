@@ -1,6 +1,6 @@
 <div align="center">
   <a href="https://github.com/brandonkthomas/elgato-wave-link-linux-recomp">
-    <img src="Public/Screenshots/wavelink-linux.png" alt="Wave Link for Linux running on SteamOS" width="720">
+    <img src="Public/Screenshots/wavelink-linux.png" alt="Wave Link for Linux running on Arch Linux" width="720">
   </a>
 
   <h3 align="center">Wave Link for Linux</h3>
@@ -39,9 +39,11 @@ with glibc 2.36 or newer and PipeWire.
 
 ## Getting Started
 
-Install steps are in [wavelink-linux/README.md](wavelink-linux/README.md). You need your own copy of the
-Wave Link installer: the app reads Elgato's fonts, images and strings from it, and they are not part of
-this repository.
+Download the [latest release](https://github.com/brandonkthomas/elgato-wave-link-linux-recomp/releases/latest)
+and run its `install.sh` with your own copy of the Wave Link Windows installer
+([`Elgato.WaveLink_3.4.0.4650_x64.msix`](https://edge.elgato.com/egc/windows/ewlw/3.4/Stable/Elgato.WaveLink_3.4.0.4650_x64.msix), from Elgato).
+Step-by-step instructions, and how to build from source, are in [wavelink-linux/README.md](wavelink-linux/README.md#install-on-arch-linux). Elgato's fonts, images and
+strings are not part of this repository or its releases; the install script copies them from your installer.
 
 ### Repository Layout
 
@@ -71,6 +73,7 @@ cmake -S wavelink-linux -B wavelink-linux/build-mac -G Ninja -DCMAKE_PREFIX_PATH
 cmake --build wavelink-linux/build-mac
 
 # x86-64 release bundle: wavelink-linux/dist/wavelink-linux-x86_64.tar.gz
+# (.github/workflows/release.yml builds and publishes it when a v* tag is pushed)
 docker buildx build --platform linux/amd64 -f wavelink-linux/packaging/release.Dockerfile \
   --target export --output type=local,dest=wavelink-linux/dist .
 ```
@@ -85,5 +88,7 @@ An independent reimplementation, not affiliated with or endorsed by Elgato or Co
 and Wave:3 are their trademarks, and the screenshot shows Wave Link's design, which belongs to Elgato.
 This repository contains no Elgato code, installers, fonts or images: the app loads those from your own
 Wave Link installer. Third-party parts keep their licenses: DeepFilterNet (MIT/Apache-2.0), the RNNoise
-LADSPA plugin (GPL-3.0, downloaded at build time), the LADSPA header (LGPL) and Microsoft's XBF parser
-and WinUI theme values (MIT).
+LADSPA plugin (GPL-3.0, downloaded at build time and shipped unmodified in releases), Qt (LGPL-3.0,
+bundled in releases), the LADSPA header (LGPL), PriTools (Apache-2.0) and Microsoft's XBF parser and WinUI
+theme values (MIT). Release bundles list them in
+[licenses/THIRD-PARTY.md](wavelink-linux/packaging/licenses/THIRD-PARTY.md).

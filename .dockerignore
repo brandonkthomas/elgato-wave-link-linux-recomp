@@ -1,6 +1,9 @@
 *
 !wave3-linux
 !wavelink-linux
+!tools/xaml-extract/src/PriDump
+tools/xaml-extract/src/PriDump/bin
+tools/xaml-extract/src/PriDump/obj
 wave3-linux/build*
 wave3-linux/dist
 wavelink-linux/build*
