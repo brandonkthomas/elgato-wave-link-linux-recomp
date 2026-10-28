@@ -3,7 +3,7 @@
     <img src="Public/Screenshots/wavelink-linux.png" alt="Wave Link for Linux running on Arch Linux" width="720">
   </a>
 
-  <h3 align="center">Wave Link for Linux</h3>
+  <h3 align="center">Elgato Wave Link for Linux</h3>
 
   <p align="center">
     Elgato Wave Link recreated for Linux w/ the mixer, Wave:3 controls, Voice Focus, Elgato EQ & Noise Removal.
@@ -28,6 +28,9 @@ exists, so the project was rebuilt from the decompiled Windows and macOS release
 Tested on Arch w/ KDE Plasma on Wayland, and should run on any x86-64 distribution
 with glibc 2.36 or newer and PipeWire.
 
+> [!WARNING]
+> Only the **Wave:3** microphone is supported at this time.
+
 ### Feature Highlights
 
 - **Mixer**: up to 8 software and 4 hardware channels across 5 mixes (Personal, Stream, Chat and your own), with Wave Link's volume law, mutes, level meters and per-app routing.
@@ -37,13 +40,31 @@ with glibc 2.36 or newer and PipeWire.
 - **Sound Check**: record up to 10 seconds of your mic after its effects and play it back.
 - **App and tray**: Wave Link's Windows interface rebuilt in Qt Quick, with the tray icon, settings and the per-channel dialog.
 
-## Getting Started
+## Install
 
-Download the [latest release](https://github.com/brandonkthomas/elgato-wave-link-linux-recomp/releases/latest)
-and run its `install.sh` with your own copy of the Wave Link Windows installer
-([`Elgato.WaveLink_3.4.0.4650_x64.msix`](https://edge.elgato.com/egc/windows/ewlw/3.4/Stable/Elgato.WaveLink_3.4.0.4650_x64.msix), from Elgato).
-Step-by-step instructions, and how to build from source, are in [wavelink-linux/README.md](wavelink-linux/README.md#install-on-arch-linux). Elgato's fonts, images and
-strings are not part of this repository or its releases; the install script copies them from your installer.
+### Arch, Ubuntu/Pop!_OS 24.04+, Fedora 37+, Mint 22+, Debian 12+
+
+1. Download the [latest release](https://github.com/brandonkthomas/elgato-wave-link-linux-recomp/releases/latest/download/wavelink-linux-x86_64.tar.gz).
+2. Download Elgato's [Wave Link installer](https://edge.elgato.com/egc/windows/ewlw/3.4/Stable/Elgato.WaveLink_3.4.0.4650_x64.msix) (`.msix` Windows build v3.4.0 -- leave compressed for now).
+3. Unpack and install:
+   ```sh
+   tar -xzf wavelink-linux-x86_64.tar.gz
+   wavelink-linux/install.sh Elgato.WaveLink_3.4.0.4650_x64.msix
+   ```
+4. Replug the Wave:3 and open **Wave Link** from the app menu.
+
+Run the commands in the folder you downloaded to. Details, updating and building from source:
+[wavelink-linux/README.md](wavelink-linux/README.md#install-on-arch-linux). Elgato's fonts, images and
+strings are not in this repository or its releases; `install.sh` copies them from your installer.
+
+> [!NOTE]
+> Only Arch has been tested at this time. Please open an issue / pull request if your distribution has any issues installing.
+
+## Uninstall
+
+To uninstall: `~/.local/opt/wavelink-linux/uninstall.sh` (add `--purge` to also remove settings and Elgato assets).
+
+## Project Technicals
 
 ### Repository Layout
 
