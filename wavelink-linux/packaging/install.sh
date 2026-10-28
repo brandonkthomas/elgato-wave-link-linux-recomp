@@ -26,7 +26,9 @@ mkdir -p "${PREFIX:?}.new"
 for d in bin lib plugins qml; do
   if [ -d "$HERE/$d" ]; then cp -a "$HERE/$d" "${PREFIX:?}.new"/; fi
 done
-[ -f "$HERE/README.md" ] && cp "$HERE/README.md" "${PREFIX:?}.new"/
+for f in README.md uninstall.sh; do
+  if [ -f "$HERE/$f" ]; then cp "$HERE/$f" "${PREFIX:?}.new"/; fi
+done
 rm -rf "${PREFIX:?}" && mv "${PREFIX:?}.new" "${PREFIX:?}"
 mkdir -p "$HOME/.local/bin"
 ln -sf "$PREFIX/bin/wavelink" "$HOME/.local/bin/wavelink"
@@ -54,3 +56,4 @@ if [ ! -f /etc/udev/rules.d/70-elgato-wave3.rules ]; then
   fi
 fi
 echo "Done. Start 'Wave Link' from the application menu (engine status: systemctl --user status wavelinkd)."
+echo "To remove it later: $PREFIX/uninstall.sh"

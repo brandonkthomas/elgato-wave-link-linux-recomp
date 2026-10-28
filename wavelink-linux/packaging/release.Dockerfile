@@ -42,7 +42,7 @@ RUN cmake -S wavelink-linux -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE
  && DESTDIR=/stage cmake --install build \
  && python3 wavelink-linux/packaging/bundle.py /stage /opt/Qt/6.8.3/gcc_64 /out/wavelink-linux \
  && mkdir -p /out/wavelink-linux/lib/wavelink/plugins && cp /plugins/*.so /out/wavelink-linux/lib/wavelink/plugins/ \
- && cp wavelink-linux/README.md wavelink-linux/packaging/install.sh wavelink-linux/packaging/wavelinkd.service wave3-linux/packaging/70-elgato-wave3.rules /out/wavelink-linux/ \
+ && cp wavelink-linux/README.md wavelink-linux/packaging/install.sh wavelink-linux/packaging/uninstall.sh wavelink-linux/packaging/wavelinkd.service wave3-linux/packaging/70-elgato-wave3.rules /out/wavelink-linux/ \
  && cp -r wavelink-linux/packaging/desktop /out/wavelink-linux/desktop \
  && cp -r wavelink-linux/packaging/licenses /out/wavelink-linux/licenses \
  && mkdir -p /out/wavelink-linux/tools && cp wavelink-linux/tools/import-elgato-assets.sh /out/wavelink-linux/tools/

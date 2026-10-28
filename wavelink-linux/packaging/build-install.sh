@@ -30,6 +30,6 @@ fetch https://github.com/werman/noise-suppression-for-voice/releases/download/v1
 cp "$BUILD/downloads/libdeep_filter_ladspa.so" "$STAGE/lib/wavelink/plugins/"
 bsdtar -xOf "$BUILD/downloads/rnnoise.zip" linux-rnnoise/ladspa/librnnoise_ladspa.so > "$STAGE/lib/wavelink/plugins/librnnoise_ladspa.so"
 
-cp "$SRC/README.md" "$HERE/install.sh" "$HERE/wavelinkd.service" "$SRC/../wave3-linux/packaging/70-elgato-wave3.rules" "$STAGE/"
+cp "$SRC/README.md" "$HERE/install.sh" "$HERE/uninstall.sh" "$HERE/wavelinkd.service" "$SRC/../wave3-linux/packaging/70-elgato-wave3.rules" "$STAGE/"
 cp -r "$HERE/desktop" "$STAGE/desktop"
 IMPORT="$SRC/tools/import-elgato-assets.sh" exec "$STAGE/install.sh" "$@"

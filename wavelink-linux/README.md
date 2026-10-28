@@ -61,11 +61,8 @@ the device you were using before. Turn that off in Settings â†’ Audio devices â†
 ## Uninstall
 
 ```sh
-systemctl --user disable --now wavelinkd.service
-rm -rf ~/.local/opt/wavelink-linux ~/.local/bin/wavelink ~/.local/bin/wavelinkd \
-  ~/.config/systemd/user/wavelinkd.service ~/.config/autostart/wavelink-linux.desktop \
-  ~/.local/share/applications/wavelink-linux.desktop
-sudo rm /etc/udev/rules.d/70-elgato-wave3.rules
+~/.local/opt/wavelink-linux/uninstall.sh          # keeps settings and Elgato assets
+~/.local/opt/wavelink-linux/uninstall.sh --purge  # removes those too
 ```
 
 App settings live in `~/.config/wavelink-linux/wavelink-linux.conf`, the engine's channels, mixes and
